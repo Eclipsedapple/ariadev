@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
 	// Mouse rotation speed
 	public float turn_speed = 150f;
 
+	public float jump_height = 250f;
+
 	// Offset of the camera
 	public Vector3 cam_dist = new Vector3(0f, 3.5f, 7f);
 
@@ -25,6 +27,14 @@ public class PlayerController : MonoBehaviour
 
 		// Move the camera behind the player
 		ResetCamera ();
+	}
+
+	private void Update()
+	{
+		if (Input.GetButtonDown("Jump"))
+		{
+			transform.GetComponent<Rigidbody>().AddForce (0, jump_height, 0);
+		}
 	}
 
 	void FixedUpdate()
@@ -46,7 +56,7 @@ public class PlayerController : MonoBehaviour
 		m_y *= Time.deltaTime * turn_speed;
 
 		// Move the player
-		transform.position += (transform.right * h + transform.forward * v);
+		//transform.position += (transform.right * h + transform.forward * v);
 		transform.Translate (transform.right * h + transform.forward * v);
 
 		// Rotate camera around player on x-axis
