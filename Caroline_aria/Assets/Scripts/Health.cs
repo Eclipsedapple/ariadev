@@ -10,12 +10,18 @@ public class Health : MonoBehaviour
 
 	public RectTransform healthBar;
 
+	public float last_hit_time;
+	public float current_hit_time;
+
+	public float invincibility_time;
+
 	bool isDead;
 
 	// Use this for initialization
 	void Awake ()
 	{
 		currentHealth = startingHealth;
+		last_hit_time = Time.time;
 	}
 
 	public void TakeDamage (int amount)
@@ -23,8 +29,21 @@ public class Health : MonoBehaviour
 		if (isDead)
 			return;
 
+		current_hit_time = Time.time;
+
+		// Check to see if it has been at least 2 seconds since the last hit
+		if (current_hit_time - last_hit_time < invincibility_time)
+		{
+			return;
+		}
+
+		last_hit_time = current_hit_time;
 		currentHealth -= amount;
-		healthBar.sizeDelta = new Vector2 (currentHealth, healthBar.sizeDelta.y);
+		if (gameObject.CompareTag ("Player"))
+		{
+			healthBar.sizeDelta = new Vector2 (currentHealth, healthBar.sizeDelta.y);
+		}
+		last_hit_time = Time.time;
 
 		if (currentHealth <= 0)
 			Death ();
