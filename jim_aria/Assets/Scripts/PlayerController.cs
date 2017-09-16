@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
 	void Start()
 	{
 		// Find the camera's transform
-		main_camera = transform.Find("Main Camera");
+		main_camera = GameObject.Find("Main Camera").transform;
 
 		// Move the camera behind the player
 		ResetCamera ();
@@ -47,10 +47,11 @@ public class PlayerController : MonoBehaviour
 
 		// Move the player
 		transform.position += (transform.right * h + transform.forward * v);
+		transform.Translate (transform.right * h + transform.forward * v);
 
 		// Rotate camera around player on x-axis
 		//main_camera.RotateAround (transform.position, Vector3.right, m_y * turn_speed * Time.deltaTime);
-
+		ResetCamera ();
 		if (h != 0f || v != 0f) 
 		{
 			// If the player is moving
