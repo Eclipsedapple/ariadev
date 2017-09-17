@@ -1,25 +1,36 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class PlayerController : MonoBehaviour 
+public class PlayerController: MonoBehaviour 
 {
 	public float speed = 6f;
 	public float jump_force = 1f;
 	public float fire_rate = 3f;
 	public float gust_knockback = 7f;
 
+	public float flap_force = 200f;
+	public float flyDownAngle = 90f;
+	public float flyUpAngle = -90f;
+	//public float antiDrift = 0.8f;
+
 	public Transform main_camera;
 	public GameObject gust_prefab;
 	public Transform gust_spawn;
 
 	private bool is_grounded = true;
+	private bool has_flapped = false;
+	private bool isFlying = false;
 
 	private float prev_attack_time;
 	private float curr_attack_time;
 
 	private Rigidbody rb;
 	private Animation ground_flap;
+
+	// Used for debugging
+	//public Text text;
 
 	void Start()
 	{
@@ -50,10 +61,21 @@ public class PlayerController : MonoBehaviour
 			transform.rotation = Quaternion.Euler (0.0f, main_camera.eulerAngles.y, 0.0f);
 		}
 
-		if (Input.GetButtonDown ("Jump") && is_grounded) 
+		if (Input.GetButtonDown ("Jump") && !isFlying)
 		{
-			rb.AddForce (Vector3.up * jump_force, ForceMode.VelocityChange);
-			is_grounded = false;
+			if (is_grounded)
+			{
+				rb.AddForce (Vector3.up * jump_force, ForceMode.VelocityChange);
+				is_grounded = false;
+			} else if (!has_flapped)
+			{
+				rb.AddForce (Vector3.up * flap_force, ForceMode.VelocityChange);
+				has_flapped = true;
+			} else
+			{
+				isFlying = true;
+				main_camera.GetComponent<CameraController> ().FlyMode = true;
+			}
 		}
 	}
 
@@ -67,6 +89,9 @@ public class PlayerController : MonoBehaviour
 				if(Vector3.Dot(contact.normal, Vector3.up) > 0.25)
 				{
 					is_grounded = true;
+					has_flapped = false;
+					isFlying = false;
+					main_camera.GetComponent<CameraController> ().FlyMode = false;
 				}
 			}
 		}
@@ -81,6 +106,18 @@ public class PlayerController : MonoBehaviour
 		float h = Input.GetAxisRaw ("Horizontal");
 		float v = Input.GetAxisRaw ("Vertical");
 
+		if (isFlying)
+		{
+			Fly (h, v);
+		}
+		else
+		{
+			Walk (h, v);
+		}
+	}
+
+	void Walk(float h, float v)
+	{
 		// If inputting movement
 		if (h != 0f || v != 0f) 
 		{
@@ -90,6 +127,30 @@ public class PlayerController : MonoBehaviour
 
 			// Move the player
 			transform.position += Vector3.ClampMagnitude(transform.right * h + transform.forward * v, speed);
-		}
+		} 
+	}
+
+	void Fly(float h, float v)
+	{
+		float u = Input.GetAxisRaw ("Jump");
+
+		//Vector3 movement = transform.InverseTransformDirection (main_camera.eulerAngles);
+		//bool rising = movement.y < 0;
+
+		float x = h * speed;
+		float y = v * -Mathf.Sin (dtr(main_camera.eulerAngles.x)) * speed;
+		float z = v * Mathf.Cos (dtr(main_camera.eulerAngles.x)) * speed;
+
+		/*text.text = "cam x: " + main_camera.eulerAngles.x
+		+ "\ncam y: " + main_camera.eulerAngles.y
+		+ "\ncam z: " + main_camera.eulerAngles.z
+			+ "\ncam x sin: " + Mathf.Sin (dtr(main_camera.eulerAngles.x));*/
+
+		rb.velocity = transform.TransformDirection(new Vector3(x, y, z));
+	}
+
+	float dtr(float degrees)
+	{
+		return degrees * Mathf.PI / 180;
 	}
 }

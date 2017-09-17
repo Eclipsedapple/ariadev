@@ -2,27 +2,49 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerControllerTEST : MonoBehaviour 
+public class PlayerControllerOBSOLETE : MonoBehaviour 
 {
 	public float speed = 6f;
 	public float jump_force = 1f;
+	public float fire_rate = 3f;
+	public float gust_knockback = 7f;
 
 	public Transform main_camera;
+	public GameObject gust_prefab;
+	public Transform gust_spawn;
 
-	private bool stopped_movement = true;
 	private bool is_grounded = true;
 
+	private float prev_attack_time;
+	private float curr_attack_time;
+
 	private Rigidbody rb;
+	private Animation ground_flap;
 
 	void Start()
 	{
 		main_camera = Camera.main.transform;
 		rb = GetComponent<Rigidbody> ();
+		ground_flap = transform.Find ("Test Wings").gameObject.GetComponent<Animation> ();
+		prev_attack_time = 0f;
+		curr_attack_time = Time.time;
 	}
 
 	void Update()
 	{
-		if (Input.GetButton ("Fire3")) 
+		if (Input.GetButtonDown("Fire2"))
+		{
+			curr_attack_time = Time.time;
+			if (curr_attack_time - prev_attack_time > fire_rate)
+			{
+				Instantiate (gust_prefab, gust_spawn.position, gust_spawn.rotation);
+				ground_flap.Play ();
+				rb.AddForce (-transform.forward * gust_knockback, ForceMode.VelocityChange);
+				prev_attack_time = curr_attack_time;
+			}
+		}
+
+		if (!Input.GetButton ("Fire3")) 
 		{
 			// face the camera's direction
 			transform.rotation = Quaternion.Euler (0.0f, main_camera.eulerAngles.y, 0.0f);
@@ -66,17 +88,8 @@ public class PlayerControllerTEST : MonoBehaviour
 			h *= Time.deltaTime * speed;
 			v *= Time.deltaTime * speed;
 
-			if (stopped_movement) 
-			{
-				transform.rotation = Quaternion.Euler (0.0f, main_camera.eulerAngles.y, 0.0f);
-				stopped_movement = false;
-			}
-
 			// Move the player
 			transform.position += Vector3.ClampMagnitude(transform.right * h + transform.forward * v, speed);
-		} else 
-		{
-			stopped_movement = true;
 		}
 	}
 }
