@@ -15,10 +15,12 @@ public class PlayerController: MonoBehaviour
 	public float flyDownAngle = 90f;
 	public float flyUpAngle = -90f;
 	private float flyNaturalFall = 1f;
+	private float groundPoundSpeed = -30;
 	//public float antiDrift = 0.8f;
 
 	public Transform main_camera;
 	public GameObject gust_prefab;
+	public GameObject gp_prefab;
 	public Transform gust_spawn;
 
 	private bool is_grounded = true;
@@ -81,6 +83,7 @@ public class PlayerController: MonoBehaviour
 		}
 	}
 
+	private float lastdown;
 	void OnCollisionEnter(Collision col)
 	{
 		if (col.gameObject.CompareTag ("ground")) 
@@ -94,6 +97,12 @@ public class PlayerController: MonoBehaviour
 					has_flapped = false;
 					isFlying = false;
 					main_camera.GetComponent<CameraController> ().FlyMode = false;
+
+					if (lastdown < groundPoundSpeed)
+					{
+						GameObject.Find ("Debug").GetComponent<Text> ().text = "POUND " + Time.time;
+						Instantiate (gp_prefab, transform.position, transform.rotation, null);
+					}
 				}
 			}
 		}
@@ -116,6 +125,8 @@ public class PlayerController: MonoBehaviour
 		{
 			Walk (h, v);
 		}
+
+		lastdown = rb.velocity.y;
 	}
 
 	void Walk(float h, float v)
