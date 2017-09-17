@@ -5,13 +5,24 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
 	public int startingHealth = 100;
-	public static int currentHealth;
-	public int scoreValue = 1;
+	private int currentHealth;
 
 	public RectTransform healthBar;
+	public RectTransform enemyBar;
 
-	public float last_hit_time;
-	public float current_hit_time;
+	private float last_hit_time;
+	private float current_hit_time;
+
+	private float barLength;
+	private float healthPercent;
+
+	/*private Color red = new Color(255, 0, 0, 0.5f);
+	private Color clear = new Color(0, 0, 0, 0);
+	private bool isRed;
+	private float turned_red = 0;
+	private float current_time;
+	private float red_length = 0.3f;
+	private Texture wood;*/
 
 	public float invincibility_time;
 
@@ -22,6 +33,30 @@ public class Health : MonoBehaviour
 	{
 		currentHealth = startingHealth;
 		last_hit_time = Time.time;
+		/*isRed         = false;
+		current_time  = Time.time;*/
+	}
+
+	void Update()
+	{
+		/*current_time = Time.time;
+
+		if (isRed && current_time - turned_red > red_length)
+		{
+			GetComponent<Renderer> ().material.color = clear;
+			isRed = false;
+		}*/
+
+		if (Input.GetKeyDown (KeyCode.Comma) && gameObject.CompareTag ("Player"))
+		{
+			TakeDamage (25);
+			Debug.Log ("Current player health: " + currentHealth.ToString ());
+		}
+		else if (Input.GetKeyDown (KeyCode.Period) && gameObject.CompareTag ("Enemy"))
+		{
+			TakeDamage (25);
+			Debug.Log ("Current enemy health: " + currentHealth.ToString ());
+		}
 	}
 
 	public void TakeDamage (int amount)
@@ -43,6 +78,16 @@ public class Health : MonoBehaviour
 		{
 			healthBar.sizeDelta = new Vector2 (currentHealth, healthBar.sizeDelta.y);
 		}
+		else if (gameObject.CompareTag ("Enemy"))
+		{	
+			healthPercent = ((float)currentHealth / (float) startingHealth);
+			Debug.Log (healthPercent.ToString());
+			barLength = (3.9f * healthPercent);
+			enemyBar.sizeDelta = new Vector2 (barLength, enemyBar.sizeDelta.y);
+			/*GetComponent<Renderer>().material.color = red;
+			isRed = true;
+			turned_red = Time.time;*/
+		}
 		last_hit_time = Time.time;
 
 		if (currentHealth <= 0)
@@ -59,20 +104,6 @@ public class Health : MonoBehaviour
 		else if (gameObject.CompareTag ("Enemy"))
 		{
 			Destroy (gameObject);
-		}
-	}
-
-	void Update()
-	{
-		if (Input.GetKeyDown (KeyCode.Comma) && gameObject.CompareTag ("Player"))
-		{
-			TakeDamage (25);
-			Debug.Log ("Current player health: " + currentHealth.ToString ());
-		}
-		else if (Input.GetKeyDown (KeyCode.Period) && gameObject.CompareTag ("Enemy"))
-		{
-			TakeDamage (25);
-			Debug.Log ("Current enemy health: " + currentHealth.ToString ());
 		}
 	}
 }
