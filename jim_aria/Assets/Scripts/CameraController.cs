@@ -7,6 +7,8 @@ public class CameraController : MonoBehaviour
 	// Y rotation min and max angles
 	private const float Y_ANGLE_MIN = 0.0f;
 	private const float Y_ANGLE_MAX = 50.0f;
+	private const float Y_ANGLE_MIN_FLY = -80.0f;
+	private const float Y_ANGLE_MAX_FLY = 80.0f;
 
 	public Transform target;
 	public Transform cam_transform;
@@ -19,6 +21,8 @@ public class CameraController : MonoBehaviour
 	private float distance = 10.0f;
 	private float current_x = 0.0f;
 	private float current_y = 0.0f;
+
+	public bool FlyMode { get; set; }
 
 	void Start()
 	{
@@ -40,7 +44,9 @@ public class CameraController : MonoBehaviour
 			current_y -= Input.GetAxis ("Mouse Y") * y_sensitivity;
 
 		// Clamp y rotation
-		current_y = Mathf.Clamp(current_y, Y_ANGLE_MIN, Y_ANGLE_MAX);
+		current_y = FlyMode ?
+			Mathf.Clamp(current_y, Y_ANGLE_MIN_FLY, Y_ANGLE_MAX_FLY) :
+			Mathf.Clamp(current_y, Y_ANGLE_MIN, Y_ANGLE_MAX);
 	}
 
 	void LateUpdate()

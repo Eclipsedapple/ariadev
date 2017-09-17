@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerControllerTEST : MonoBehaviour 
 {
@@ -10,7 +11,6 @@ public class PlayerControllerTEST : MonoBehaviour
 	public float flyDownAngle = 90f;
 	public float flyUpAngle = -90f;
 	public float antiDrift = 0.8f;
-	private float antiGrav = 9f;
 
 	public Transform main_camera;
 
@@ -20,6 +20,8 @@ public class PlayerControllerTEST : MonoBehaviour
 	private bool isFlying = false;
 
 	private Rigidbody rb;
+
+	public Text text;
 
 	void Start()
 	{
@@ -48,6 +50,7 @@ public class PlayerControllerTEST : MonoBehaviour
 			} else
 			{
 				isFlying = true;
+				main_camera.GetComponent<CameraController> ().FlyMode = true;
 			}
 		}
 	}
@@ -64,6 +67,7 @@ public class PlayerControllerTEST : MonoBehaviour
 					is_grounded = true;
 					has_flapped = false;
 					isFlying = false;
+					main_camera.GetComponent<CameraController> ().FlyMode = false;
 				}
 			}
 		}
@@ -115,11 +119,23 @@ public class PlayerControllerTEST : MonoBehaviour
 	{
 		float u = Input.GetAxisRaw ("Jump");
 
-		Vector3 movement = -transform.InverseTransformDirection (rb.velocity) * antiDrift;
+		//Vector3 movement = transform.InverseTransformDirection (main_camera.eulerAngles);
+		//bool rising = movement.y < 0;
 
-		movement.z = v * 2 * speed;
-		movement.y = u * speed + antiGrav;
+		float x = h * speed;
+		float y = v * -Mathf.Sin (dtr(main_camera.eulerAngles.x)) * speed;
+		float z = v * Mathf.Cos (dtr(main_camera.eulerAngles.x)) * speed;
 
-		rb.AddRelativeForce (movement);
+		text.text = "cam x: " + main_camera.eulerAngles.x
+		+ "\ncam y: " + main_camera.eulerAngles.y
+		+ "\ncam z: " + main_camera.eulerAngles.z
+			+ "\ncam x sin: " + Mathf.Sin (dtr(main_camera.eulerAngles.x));
+
+		rb.velocity = transform.TransformDirection(new Vector3(x, y, z));
+	}
+
+	float dtr(float degrees)
+	{
+		return degrees * Mathf.PI / 180;
 	}
 }
