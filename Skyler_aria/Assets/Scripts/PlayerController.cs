@@ -14,6 +14,7 @@ public class PlayerController: MonoBehaviour
 	public float flap_force = 5f;
 	public float flyDownAngle = 90f;
 	public float flyUpAngle = -90f;
+	private float flyNaturalFall = 1f;
 	//public float antiDrift = 0.8f;
 
 	public Transform main_camera;
@@ -124,7 +125,7 @@ public class PlayerController: MonoBehaviour
 		{
 			// Multiply movement axis by speeds
 			h *= Time.deltaTime * speed;
-			v *= Time.deltaTime * speed;
+			v *= Time.deltaTime * speed * (Input.GetButton("Boost") ? 2 : 1);
 
 			// Move the player
 			transform.position += Vector3.ClampMagnitude(transform.right * h + transform.forward * v, speed);
@@ -139,7 +140,7 @@ public class PlayerController: MonoBehaviour
 		//bool rising = movement.y < 0;
 		float fs = fly_speed * (Input.GetButton("Boost") ? 3 : 1);
 		float x = h * fs;
-		float y = v * -Mathf.Sin (dtr(main_camera.eulerAngles.x)) * fs;
+		float y = v * -Mathf.Sin (dtr(main_camera.eulerAngles.x)) * fs + u * fs - flyNaturalFall;
 		float z = v * Mathf.Cos (dtr(main_camera.eulerAngles.x)) * fs;
 
 		/*text.text = "cam x: " + main_camera.eulerAngles.x
