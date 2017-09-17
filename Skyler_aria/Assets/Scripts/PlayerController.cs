@@ -10,7 +10,8 @@ public class PlayerController: MonoBehaviour
 	public float fire_rate = 3f;
 	public float gust_knockback = 7f;
 
-	public float flap_force = 200f;
+	public float fly_speed = 10f;
+	public float flap_force = 5f;
 	public float flyDownAngle = 90f;
 	public float flyUpAngle = -90f;
 	//public float antiDrift = 0.8f;
@@ -136,10 +137,10 @@ public class PlayerController: MonoBehaviour
 
 		//Vector3 movement = transform.InverseTransformDirection (main_camera.eulerAngles);
 		//bool rising = movement.y < 0;
-
-		float x = h * speed;
-		float y = v * -Mathf.Sin (dtr(main_camera.eulerAngles.x)) * speed;
-		float z = v * Mathf.Cos (dtr(main_camera.eulerAngles.x)) * speed;
+		float fs = fly_speed * (Input.GetButton("Boost") ? 3 : 1);
+		float x = h * fs;
+		float y = v * -Mathf.Sin (dtr(main_camera.eulerAngles.x)) * fs;
+		float z = v * Mathf.Cos (dtr(main_camera.eulerAngles.x)) * fs;
 
 		/*text.text = "cam x: " + main_camera.eulerAngles.x
 		+ "\ncam y: " + main_camera.eulerAngles.y
