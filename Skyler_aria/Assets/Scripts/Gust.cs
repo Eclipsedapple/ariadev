@@ -7,7 +7,9 @@ public class Gust : MonoBehaviour
 	public int damage = 10;
 	public float lifetime = 0.5f;
 	public float speed = 6f;
-	public float gust_knockback = 7f;
+
+	// Knockback strength
+	//public float gust_knockback = 7f;
 
 	void Awake()
 	{
@@ -22,7 +24,9 @@ public class Gust : MonoBehaviour
 		if (hit.CompareTag ("Enemy") && health != null) 
 		{
 			health.TakeDamage (damage);
-			hit.GetComponent<Rigidbody> ().AddForce((hit.transform.position - col.contacts[0].point) * gust_knockback, ForceMode.VelocityChange);
+
+			// pushing back the enemy
+			//hit.GetComponent<Rigidbody> ().AddForce((hit.transform.position - col.contacts[0].point) * gust_knockback, ForceMode.VelocityChange);
 		}
 		else if(hit.CompareTag("Wall"))
 		{
