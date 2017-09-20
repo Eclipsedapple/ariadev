@@ -100,8 +100,7 @@ public class PlayerController: MonoBehaviour
 
 					if (lastdown < groundPoundSpeed)
 					{
-						GameObject.Find ("Debug").GetComponent<Text> ().text = "POUND " + Time.time;
-						Instantiate (gp_prefab, transform.position, transform.rotation, null);
+						Instantiate (gp_prefab, (transform.position - (transform.up * 1)), transform.rotation, null);
 					}
 				}
 			}
