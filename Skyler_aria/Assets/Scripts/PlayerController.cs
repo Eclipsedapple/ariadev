@@ -165,4 +165,13 @@ public class PlayerController: MonoBehaviour
 	{
 		return degrees * Mathf.PI / 180;
 	}
+
+	void OnTriggerEnter(Collider col)
+	{
+		if (col.CompareTag ("Goal")) 
+		{
+			Debug.Log ("The End");
+			Application.Quit ();
+		}
+	}
 }

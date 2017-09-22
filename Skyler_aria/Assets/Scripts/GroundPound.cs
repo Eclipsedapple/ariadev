@@ -23,12 +23,6 @@ public class GroundPound : MonoBehaviour {
 		GameObject hit = col.gameObject;
 		Health health = hit.GetComponent<Health> ();
 
-		UnityEngine.UI.Text debug = GameObject.Find ("Debug").GetComponent<UnityEngine.UI.Text> ();
-		if (debug != null)
-		{
-			//debug.text = "Collided with gameobject: " + hit.name;
-		}
-
 		if (hit.CompareTag ("Enemy") && health != null) 
 		{
 			health.TakeDamage (damage);
@@ -41,10 +35,6 @@ public class GroundPound : MonoBehaviour {
 			if (moveable != null)
 			{
 				moveable.AddForce (pushDir * push_speed);
-				if (debug != null)
-				{
-					debug.text = "Force: " + pushDir;
-				}
 			}
 		}
 	}
