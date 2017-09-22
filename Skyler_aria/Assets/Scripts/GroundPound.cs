@@ -7,7 +7,7 @@ public class GroundPound : MonoBehaviour {
 	int damage = 20;
 	float lifetime = 0.25f;
 	float rise_speed = 6f;
-	float expand_speed = 20f;
+	float expand_speed = 1.0625f;
 	float push_speed = 200f;
 
 	// Knockback strength
@@ -42,6 +42,7 @@ public class GroundPound : MonoBehaviour {
 	void Update()
 	{
 		transform.position += transform.up * rise_speed * Time.deltaTime;
-		transform.localScale += (transform.right + transform.forward) * expand_speed * Time.deltaTime;
+		transform.localScale *= expand_speed;
+		//transform.localScale += (transform.right + transform.forward) * expand_speed * Time.deltaTime;
 	}
 }
