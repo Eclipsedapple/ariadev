@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class GroundPound : MonoBehaviour {
 
-	public int damage = 20;
-	public float lifetime = 0.25f;
-	public float rise_speed = 6f;
-	public float expand_speed = 20f;
+	int damage = 20;
+	float lifetime = 0.25f;
+	float rise_speed = 6f;
+	float expand_speed = 20f;
+	float push_speed = 200f;
 
 	// Knockback strength
 	//public float gust_knockback = 7f;
@@ -17,17 +18,34 @@ public class GroundPound : MonoBehaviour {
 		Destroy (gameObject, lifetime);
 	}
 
-	void OnCollisionEnter(Collision col)
+	void OnTriggerEnter(Collider col)
 	{
 		GameObject hit = col.gameObject;
 		Health health = hit.GetComponent<Health> ();
+
+		UnityEngine.UI.Text debug = GameObject.Find ("Debug").GetComponent<UnityEngine.UI.Text> ();
+		if (debug != null)
+		{
+			//debug.text = "Collided with gameobject: " + hit.name;
+		}
 
 		if (hit.CompareTag ("Enemy") && health != null) 
 		{
 			health.TakeDamage (damage);
 
-			// pushing back the enemy
-			//hit.GetComponent<Rigidbody> ().AddForce((hit.transform.position - col.contacts[0].point) * gust_knockback, ForceMode.VelocityChange);
+			Vector3 pushDir = (hit.transform.position - transform.position);
+			pushDir.Normalize ();
+			pushDir += transform.up;
+
+			Rigidbody moveable = hit.GetComponent<Rigidbody> ();
+			if (moveable != null)
+			{
+				moveable.AddForce (pushDir * push_speed);
+				if (debug != null)
+				{
+					debug.text = "Force: " + pushDir;
+				}
+			}
 		}
 	}
 
